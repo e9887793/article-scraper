@@ -1,13 +1,7 @@
-import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
 import seleniumwire.undetected_chromedriver as uc
-import random
-from openpyxl import Workbook
 from openpyxl import load_workbook
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 import time
 from selenium.webdriver.common.action_chains import ActionChains
 
@@ -16,13 +10,16 @@ team = "pediatrics"
 fileName = "_data.xlsx"
 fullFile = team + fileName
 
+def get_funding(text):
+    return text
+
 def read_data(dr, url):
     dr.get(url)
-    time.sleep(10)
-    button = dr.find_element(By.TAG_NAME, "input")
-    print(button.parent)
-    dr.implicitly_wait(2)
-    ActionChains(dr).move_to_element(button).click(button).perform()
+    time.sleep(3)
+    body = dr.find_element(By.TAG_NAME, "body")
+    # print(button.parent)
+    # dr.implicitly_wait(2)
+    # ActionChains(dr).move_to_element(button).click(button).perform()
     # dr.find_element(By.TAG_NAME, "input").click();
     # WebDriverWait(driver, 20).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[title='Widget containing a Cloudflare security challenge']")))
     # WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "label.ctp-checkbox-label"))).click() 
@@ -31,9 +28,11 @@ def read_data(dr, url):
 
     # wait.until(EC.invisibility_of_element_located((By.XPATH, "//div[@class='ray-id']")))
     # now get page content
-    bs = BeautifulSoup(dr.page_source,"html.parser")
-    # [s.extract() for s in bs(['style', 'script', '[document]', 'head', 'title'])]
-    return bs.findAll(string=True)
+    bs = BeautifulSoup(body.text,"html.parser")
+    text = bs.findAll(string=True)
+
+    return text;
+
 
 def setup_driver():
     ## Set chrome Options
@@ -123,9 +122,3 @@ for i in range(2, data.max_row):
     print(url)
     text = read_data(dr, url)
     process(text)
-
-# text = ""
-# try:
-#     text = read_data(dr)
-# except TimeoutException as error: 
-#     "Error during data read: {0}".format(error)
